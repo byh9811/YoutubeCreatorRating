@@ -3,8 +3,6 @@ package wgstudy.back.service;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-
-import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -20,6 +18,7 @@ import com.google.api.services.youtube.model.ChannelSnippet;
 import com.google.api.services.youtube.model.SearchResult;
 
 import wgstudy.back.domain.AutoCompletion;
+import wgstudy.back.domain.AutoCompletionContent;
 
 @Service
 public class AutoCompletionService implements AutoCompletionProvider {
@@ -102,12 +101,12 @@ public class AutoCompletionService implements AutoCompletionProvider {
 	    		System.out.println(" Title: " + title);
 	    		System.out.println(" Profile: " + profile);
 	    		System.out.println("\n-------------------------------------------------------------\n");
-
-	    		JSONObject jo = new JSONObject();
-	    		jo.put("title", title);
-	    		jo.put("profile", profile);
 	    		
-	    		ac.getChannelLists().put(jo);
+	    		AutoCompletionContent acc = new AutoCompletionContent();
+	    		acc.setTitle(title);
+	    		acc.setProfile(profile);
+	    		
+	    		ac.getChannelLists().add(acc);
 	    	}
 	    }
 	}

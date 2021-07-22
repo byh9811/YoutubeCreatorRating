@@ -1,6 +1,7 @@
 package wgstudy.back.domain;
 
-import org.json.JSONArray;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,9 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AutoCompletion {
-	JSONArray channelLists;
+	private List<AutoCompletionContent> channelLists;
 	
 	public AutoCompletion() {
-		channelLists = new JSONArray();
+		channelLists = new ArrayList<AutoCompletionContent>();
 	}
 }
