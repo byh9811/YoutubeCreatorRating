@@ -17,6 +17,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelSnippet;
+import com.google.api.services.youtube.model.SearchResult;
 
 import wgstudy.back.domain.AutoCompletion;
 
@@ -24,7 +25,7 @@ import wgstudy.back.domain.AutoCompletion;
 public class AutoCompletionService implements AutoCompletionProvider {
 	private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
 	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
-	private static final long NUMBER_OF_VIDEOS_RETURNED = 8;
+	private static final long NUMBER_OF_VIDEOS_RETURNED_BY_NAME = 8;
 	private static YouTube youtube;
 	
 	@Override
@@ -36,15 +37,24 @@ public class AutoCompletionService implements AutoCompletionProvider {
 				public void initialize(HttpRequest request) throws IOException { }
 			}).setApplicationName("youtube-video-duration-get").build();
 			
-			YouTube.Channels.List channels = youtube.channels().list("snippet");
-			channels.setKey("AIzaSyCjOlrNkkzNNTkA8ZqkKXfY7n9OA-CkLIE");
-			channels.setForUsername(name);
-			channels.setMaxResults(NUMBER_OF_VIDEOS_RETURNED);
-			List<Channel> ChannelList = channels.execute().getItems();
+			List<SearchResult> searchResult = getChannelIdByName(name);
 			
-			if (ChannelList != null) {
-				prettyPrint(ChannelList.iterator(), ac);
+			if(searchResult == null)
+				return null;
+			
+			Iterator<SearchResult> iterator = searchResult.iterator();
+			StringBuilder sb = new StringBuilder();
+			while(true) {
+				sb.append(iterator.next().getId().getChannelId().toString());
+				if(iterator.hasNext())
+					sb.append(",");
+				else
+					break;
 			}
+			System.out.println("ChannelIds: " + sb);
+
+			List<Channel> channelList = getChannelSnippetByChannelId(sb.toString());
+			prettyPrint(channelList.iterator(), ac);
 		}
 		catch (GoogleJsonResponseException e) {
 			System.err.println("There was a service error: " + e.getDetails().getCode() + " : " + e.getDetails().getMessage());
@@ -55,6 +65,22 @@ public class AutoCompletionService implements AutoCompletionProvider {
 		}
 
 		return ac;
+	}
+
+	private List<SearchResult> getChannelIdByName(String name) throws IOException {
+		YouTube.Search.List search = youtube.search().list("id");
+		search.setKey("AIzaSyCjOlrNkkzNNTkA8ZqkKXfY7n9OA-CkLIE");
+		search.setQ(name);
+		search.setType("channel");
+		search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED_BY_NAME);
+		return search.execute().getItems();
+	}
+
+	private List<Channel> getChannelSnippetByChannelId(String id) throws IOException {
+		YouTube.Channels.List channels = youtube.channels().list("snippet");
+		channels.setKey("AIzaSyCjOlrNkkzNNTkA8ZqkKXfY7n9OA-CkLIE");
+		channels.setId(id);
+		return channels.execute().getItems();
 	}
 
 	private void prettyPrint(Iterator<Channel> iterator, AutoCompletion ac) {
