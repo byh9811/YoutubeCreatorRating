@@ -1,4 +1,4 @@
-package wgstudy.ycr.domain;
+package wgstudy.back.domain;
 
 import org.json.JSONArray;
 

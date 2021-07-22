@@ -1,11 +1,11 @@
-package wgstudy.ycr.controller;
+package wgstudy.back.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import wgstudy.ycr.domain.AutoCompletion;
-import wgstudy.ycr.service.AutoCompletionProvider;
+import wgstudy.back.domain.AutoCompletion;
+import wgstudy.back.service.AutoCompletionProvider;
 
 @RestController
 public class MainController {

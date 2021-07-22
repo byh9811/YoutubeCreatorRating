@@ -1,6 +1,6 @@
-package wgstudy.ycr.service;
+package wgstudy.back.service;
 
-import wgstudy.ycr.domain.AutoCompletion;
+import wgstudy.back.domain.AutoCompletion;
 
 public interface AutoCompletionProvider {
 	AutoCompletion run(String name);

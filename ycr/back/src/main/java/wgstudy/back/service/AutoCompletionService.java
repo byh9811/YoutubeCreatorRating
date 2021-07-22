@@ -1,4 +1,4 @@
-package wgstudy.ycr.service;
+package wgstudy.back.service;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -18,7 +18,7 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelSnippet;
 
-import wgstudy.ycr.domain.AutoCompletion;
+import wgstudy.back.domain.AutoCompletion;
 
 @Service
 public class AutoCompletionService implements AutoCompletionProvider {
