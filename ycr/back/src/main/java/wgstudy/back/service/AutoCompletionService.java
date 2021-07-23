@@ -3,6 +3,8 @@ package wgstudy.back.service;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+
 import org.springframework.stereotype.Service;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -15,6 +17,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelSnippet;
+import com.google.api.services.youtube.model.ChannelStatistics;
 import com.google.api.services.youtube.model.SearchResult;
 
 import wgstudy.back.domain.AutoCompletion;
@@ -38,7 +41,7 @@ public class AutoCompletionService implements AutoCompletionProvider {
 			
 			List<SearchResult> searchResult = getChannelIdByName(name);
 			
-			if(searchResult == null)
+			if(searchResult.size()==0)
 				return null;
 			
 			Iterator<SearchResult> iterator = searchResult.iterator();
@@ -72,11 +75,20 @@ public class AutoCompletionService implements AutoCompletionProvider {
 		search.setQ(name);
 		search.setType("channel");
 		search.setMaxResults(NUMBER_OF_VIDEOS_RETURNED_BY_NAME);
+
+		// To search in specific country
+		Locale locale = Locale.KOREA;
+		search.setRegionCode(locale.getCountry());
+		search.setRelevanceLanguage(locale.getLanguage());
+		
+		// To sort search results [ relevance(default), rating, viewCount... ], But inaccurate method.
+		// search.setOrder("videoCount");
+		
 		return search.execute().getItems();
 	}
 
 	private List<Channel> getChannelSnippetByChannelId(String id) throws IOException {
-		YouTube.Channels.List channels = youtube.channels().list("snippet");
+		YouTube.Channels.List channels = youtube.channels().list("snippet, statistics");
 		channels.setKey("AIzaSyCjOlrNkkzNNTkA8ZqkKXfY7n9OA-CkLIE");
 		channels.setId(id);
 		return channels.execute().getItems();
@@ -96,18 +108,30 @@ public class AutoCompletionService implements AutoCompletionProvider {
 	    	if (singleChannel.getKind().equals("youtube#channel")) {
 	    		ChannelSnippet snippet = singleChannel.getSnippet();
 	    		String title = snippet.getTitle();
-	    		String profile = snippet.getThumbnails().getDefault().getUrl();
-
+	    		String chImg = snippet.getThumbnails().getDefault().getUrl();
+	    		
+	    		ChannelStatistics statistics = singleChannel.getStatistics();
+	    		long subs;
+	    		try {
+		    		subs = statistics.getSubscriberCount().longValue();
+	    		}
+	    		catch (NullPointerException e) {
+	    			subs = 0;
+	    		}
+	    		
 	    		System.out.println(" Title: " + title);
-	    		System.out.println(" Profile: " + profile);
+	    		System.out.println(" Profile: " + chImg);
+	    		System.out.println(" Subs: " + subs);
 	    		System.out.println("\n-------------------------------------------------------------\n");
 	    		
 	    		AutoCompletionContent acc = new AutoCompletionContent();
 	    		acc.setTitle(title);
-	    		acc.setProfile(profile);
+	    		acc.setChannelImg(chImg);
+	    		acc.setSubscribers(subs);
 	    		
 	    		ac.getChannelLists().add(acc);
 	    	}
 	    }
+	    ac.getChannelLists().sort(null);
 	}
 }

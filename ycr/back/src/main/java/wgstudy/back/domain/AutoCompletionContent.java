@@ -5,7 +5,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AutoCompletionContent {
+public class AutoCompletionContent implements Comparable<AutoCompletionContent> {
 	private String title;
-	private String profile;
+	private String channelImg;
+	private long subscribers;
+	
+	@Override
+	public int compareTo(AutoCompletionContent o) {
+		return (int) -(this.subscribers - o.subscribers);
+	}
 }
