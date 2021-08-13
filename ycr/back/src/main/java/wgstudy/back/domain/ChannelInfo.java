@@ -1,5 +1,8 @@
 package wgstudy.back.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,11 +14,14 @@ public class ChannelInfo {
 	private String description;
 	private String category;
 	private long subscribers;
-	private int ATK;		// total & recent views
-	private int DEF;		// subs per views
-	private int LV;			// ??
-	private int EXP;		// ??
+	private int ATK;		// recent averge views
+	private int DEF;		// subs
+	private int LV;			// (ATK/5) + DEF / penalty * Equip
 	private String characterImg;
 	private String itemImg;
-	private String itemInfo;
+	private List<String> items;
+	
+	public ChannelInfo() {
+		items = new ArrayList<String>();
+	}
 }
