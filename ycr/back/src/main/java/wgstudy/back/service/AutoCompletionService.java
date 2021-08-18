@@ -88,7 +88,7 @@ public class AutoCompletionService implements AutoCompletionProvider {
 	}
 
 	private List<Channel> getChannelSnippetByChannelId(String id) throws IOException {
-		YouTube.Channels.List channels = youtube.channels().list("snippet, statistics");
+		YouTube.Channels.List channels = youtube.channels().list("id, snippet, statistics");
 		channels.setKey("AIzaSyCjOlrNkkzNNTkA8ZqkKXfY7n9OA-CkLIE");
 		channels.setId(id);
 		return channels.execute().getItems();
@@ -106,6 +106,7 @@ public class AutoCompletionService implements AutoCompletionProvider {
 	    	Channel singleChannel = iterator.next();
 
 	    	if (singleChannel.getKind().equals("youtube#channel")) {
+	    		String channelId = singleChannel.getId();
 	    		ChannelSnippet snippet = singleChannel.getSnippet();
 	    		String title = snippet.getTitle();
 	    		String chImg = snippet.getThumbnails().getDefault().getUrl();
@@ -125,6 +126,7 @@ public class AutoCompletionService implements AutoCompletionProvider {
 	    		System.out.println("\n-------------------------------------------------------------\n");
 	    		
 	    		AutoCompletionContent acc = new AutoCompletionContent();
+	    		acc.setId(channelId);
 	    		acc.setTitle(title);
 	    		acc.setChannelImg(chImg);
 	    		acc.setSubscribers(subs);

@@ -2,8 +2,6 @@ package wgstudy.back.service;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
 
 import org.springframework.stereotype.Service;
 
@@ -15,17 +13,14 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.YouTube.Channels;
+import com.google.api.services.youtube.YouTube.GuideCategories;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelSnippet;
 import com.google.api.services.youtube.model.ChannelStatistics;
+import com.google.api.services.youtube.model.GuideCategory;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
-import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatistics;
-
-import wgstudy.back.domain.AutoCompletion;
-import wgstudy.back.domain.AutoCompletionContent;
 import wgstudy.back.domain.ChannelInfo;
 
 @Service
@@ -59,7 +54,28 @@ public class ChannelInfoService implements ChannelInfoProvider {
 
 		return ci;
 	}
-	
+/*
+	private void getCategoryById(String id, ChannelInfo ci) throws IOException {
+		System.out.println("1");
+		YouTube.GuideCategories.List categories = youtube.guideCategories().list("snippet");
+		System.out.println("2");
+		categories.setKey("AIzaSyCjOlrNkkzNNTkA8ZqkKXfY7n9OA-CkLIE");
+		System.out.println("3");
+		categories.setId(id);
+		System.out.println("4");
+		Iterator<GuideCategory> iterator = categories.execute().getItems().iterator();
+		System.out.println("5");
+		if (!iterator.hasNext()) {
+		      System.out.println(" There aren't any results for your query.");
+		}
+		
+		while (iterator.hasNext()) {
+			GuideCategory singleCategory = iterator.next();
+			ci.getCategories().add(singleCategory.getSnippet().getTitle());
+		}
+	}
+*/
+
 	private void getVideoInfoById(String videoList, ChannelInfo ci) throws IOException {
 		int views = 0;
 		int penalty = 1;
@@ -186,7 +202,6 @@ public class ChannelInfoService implements ChannelInfoProvider {
 				
 			    ChannelStatistics statistics = singleChannel.getStatistics();
 				long viewCount;
-				long commentCount;
 				long subscriberCount;
 		    	
 		    	try {
@@ -195,13 +210,6 @@ public class ChannelInfoService implements ChannelInfoProvider {
 		    	catch (NullPointerException e) {
 		    		viewCount = 0;
 		    	}
-
-		    	try {
-		    		commentCount = statistics.getCommentCount().longValue();
-		    	}
-		    	catch (NullPointerException e) {
-		    		commentCount = 0;
-		    	}
 		    	
 		    	try {
 		    		subscriberCount = statistics.getSubscriberCount().longValue();
@@ -209,12 +217,11 @@ public class ChannelInfoService implements ChannelInfoProvider {
 		    	catch (NullPointerException e) {
 		    		subscriberCount = 0;
 		    	}
-			    		
+			    
 		    	System.out.println(" Title: " + title);
 		    	System.out.println(" Profile: " + chImg);
 		    	System.out.println(" Description: " + description);
 		    	System.out.println(" ViewCount: " + viewCount);
-		    	System.out.println(" CommentCount: " + commentCount);
 		    	System.out.println(" SubscriberCount: " + subscriberCount);
 		    	System.out.println("\n-------------------------------------------------------------\n");
 		    	

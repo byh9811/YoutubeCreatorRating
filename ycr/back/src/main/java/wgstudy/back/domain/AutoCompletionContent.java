@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AutoCompletionContent implements Comparable<AutoCompletionContent> {
+	private String id;
 	private String title;
 	private String channelImg;
 	private long subscribers;
